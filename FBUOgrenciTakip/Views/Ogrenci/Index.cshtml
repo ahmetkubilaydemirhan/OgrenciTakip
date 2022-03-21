@@ -1,0 +1,46 @@
+﻿@model IEnumerable<DataAccessLayer.Entities.Ogrenci>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+<h2>dıratin:@ViewData["duration"] </h2>
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<div class="row">
+    <form asp-action="Index">
+        <div class="col-md-2">
+        Ad:<input type="text" id="aranacak" name="aranacak"  />
+        </div>
+        <div class="col-md-2">
+        Soyad:<input type="text" id="aranacakSoyad" name="aranacakSoyad"  />
+        </div>
+        <div class="col-md-1">
+            <input type="submit" value="Ara" class="btn btn-primary" />
+
+        </div>
+    </form>
+</div>
+<input type="button" class="btn btn-danger searchOgr" value="SearchByAjax" />
+<div id="ogrList" name="ogrList">
+    @Html.Partial("OgrListPartial", Model)
+</div>
+
+@section Scripts{ 
+<script>
+    $(document).ready(function () {
+
+        $('.searchOgr').click(function () {
+            let araAd = $('#aranacak').val();
+            let araSoyad = $('#aranacakSoyad').val();
+            let url = "/Ogrenci/OgrListPartial?aranacak=" + araAd + "&aranacakSoyad=" + araSoyad;
+            console.log(url);
+            $('#ogrList').load(url);
+        })
+
+    });
+   
+</script>
+}

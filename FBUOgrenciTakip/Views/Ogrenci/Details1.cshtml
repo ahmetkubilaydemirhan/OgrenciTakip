@@ -1,0 +1,169 @@
+﻿@model int
+
+        <div>
+            <h1>
+                Öğrenciler
+            </h1>
+        </div>
+        <div><input type="text" id="searchOgrId" value="@Model" />
+    <img id="myimage" src="~/images/loading.gif" style="display:none"  width="30" /></div>
+        <div id="valMessage" class="alert-danger"></div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="row">
+                    <div class="col-md-2">Id</div>
+                    <div class="col-md-10"><span id="ogrId">0</span></div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2">Ad</div>
+                    <div class="col-md-10"><span id="ogrName">0</span></div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2">Soyad</div>
+                    <div class="col-md-10"><span id="ogrSurName">0</span></div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2">Telefon</div>
+                    <div class="col-md-10"><span id="ogrTel">0</span></div>
+                </div>
+
+            </div>
+            <div class="col-md-8">
+                <div class="form-group">
+                    not:<input type="text" class="form-control" id="ogrNote" name="ogrNote" />
+
+                </div>
+                <div class="form-group">
+                    notID:<input readonly type="text" class="form-control" id="notId" name="notId" value="0" />
+
+                </div>
+                <div>
+                    <button value="not kaydet" class="btn btn-primary" id="saveNote">kaydet</button>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div id="notlarDiv" class="col-md-6">
+                <div class="row">
+                    <div class="col-md-4">id</div>
+                    <div class="col-md-8">text</div>
+                </div>
+            </div>
+        </div>
+  
+    @section Scripts
+{
+        <script>
+    $(document).ready(function () {
+        GetOgrenci(@Model);
+
+        $('#searchOgrId').change(function () {
+            GetOgrenci($('#searchOgrId').val());
+        })
+
+        $('#saveNote').click(function () {
+            var notText = $('#ogrNote').val();
+            var ogrId = $('#ogrId').html();
+            var notId = $('#notId').val();
+            console.log(ogrId + ":" + notText);
+            var url = "http://localhost:10428/api/Note/"
+            var data = {
+                ogrId: ogrId
+                , noteText: notText,
+                notId: notId
+            };
+            $.ajax({
+                url: url,
+                type: 'POST',
+                dataType: 'json',
+                data: data,
+                success: function (data, textStatus, xhr) {
+                    console.log(data);
+                    getNotesByOgr(ogrId);
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.log('Error in Operation');
+                }
+            });
+
+        });
+    });
+
+        function GetOgrenci(ogrId) {
+            console.log("öğrenci id :" + ogrId + " için çalışıyor");
+
+            var url = "http://localhost:10428/api/Ogr/" + ogrId;
+
+
+            $('#myimage').toggle();
+            $('#ogrId').html("");
+            $('#ogrName').html("");
+            $('#ogrSurName').html("");
+            $('#ogrTel').html("");
+            $('#valMessage').html("");
+
+            $("#searchOgrId").prop('disabled', true); //disable.
+            
+            $.get(url, function (data, status) {
+                $('#myimage').toggle();
+                $("#searchOgrId").prop('disabled', false); //enable.
+                if (data.success) {
+                    $('#ogrId').html(data.id);
+                    $('#ogrName').html(data.ad);
+                    $('#ogrSurName').html(data.soyad);
+                    $('#ogrTel').html(data.tel);
+                    $('#valMessage').html("");
+                    getNotesByOgr(data.id);
+                }
+                else {
+
+                    $('#valMessage').html(data.errorMessage);
+                }
+
+
+            }); 
+            }
+
+            function getNotesByOgr(ogrId) {
+                var url = "http://localhost:10428/api/Note/" + ogrId;
+                $.get(url, function (data, status) {
+                    $('#notlarDiv').html("");
+                    data.notlar.forEach(function (item) {
+                        $('#notlarDiv').append('<div class="row"><div class="col-md-4"><button onclick="updateNote(' + item.id + ',\''+item.text+'\')">Update</button><button onclick="deleteNote(' + item.id + ')">DELETE</button> ' + item.id + '</div ><div class="col-md-8">' + item.text + '</div></div>')
+                        console.log(item.id + "-" + item.text);
+                    });
+                });
+
+            }
+
+            function deleteNote(notID) {
+              
+
+                var url = "http://localhost:10428/api/Note/" + notID;
+                var data = {
+                    id: notID
+                };
+                $.ajax({
+                    url: url,
+                    method: 'DELETE',
+                    contentType: 'application/json',
+                    success: function (result) {
+                        getNotesByOgr($('#ogrId').html());
+                    },
+                    error: function (request, msg, error) {
+                        // handle failure
+                    }
+                });
+
+
+            }
+
+            function updateNote(notId, noteText) {
+              //  alert(notId + ":" + noteText);
+                $('#ogrNote').val(noteText);
+                $('#notId').val(notId);
+            }
+
+        </script>
+
+    }

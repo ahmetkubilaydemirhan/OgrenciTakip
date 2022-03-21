@@ -1,0 +1,94 @@
+﻿@model FBUOgrenciTakip.Models.OgretmenViewModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div class="row">
+    <div class="col-md-4">
+        <h4>OgretmenViewModel</h4>
+        <hr />
+        <dl class="row">
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Id)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Id)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Ad)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Ad)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Soyad)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Soyad)
+            </dd>
+        </dl>
+    </div>
+    <div id="divAtanmis" class="col-md-4">
+        <h3> atanmış</h3>
+        @foreach(var item in Model.AtanmisOgrenciler)
+            {
+    <div id="ogr_@item.Id" bos="0" onclick="moveToAtanmis(this,@item.Id)">@item.Id | @item.Ad | @item.Soyad</div>
+            }
+
+    </div>
+    <div id="divBos" class="col-md-4">
+        <h3> bekleyen</h3>
+        @foreach (var item in Model.BosOgrenciler)
+        {
+            <div id="ogr_@item.Id" bos="1" onclick="moveToAtanmis(this,@item.Id)">@item.Id | @item.Ad | @item.Soyad</div>
+        }
+    </div>
+</div>
+<div>
+    @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts{
+
+    <script>
+    function moveToAtanmis(divToAdd,ogrId) {
+        //var divId = "#ogr_" + ogrId;
+        //var divToAdd = $(divId);
+        let ogretmenId =@Model.Id;
+        if (divToAdd.getAttribute("bos") == "1") {
+            $('#divAtanmis').append(divToAdd);
+            divToAdd.setAttribute("bos", "0");
+        }
+        else {
+            $('#divBos').append(divToAdd);
+            divToAdd.setAttribute("bos", "1");
+            ogretmenId = 0;
+        }
+
+        var url = "http://localhost:10428/api/Ogr/";
+        var data = {
+            ogrId: ogrId
+            ,ogretmenId:ogretmenId
+        };
+        $.ajax({
+            url: url,
+            type: 'POST',
+            dataType: 'json',
+            data: data,
+            success: function (data, textStatus, xhr) {
+                console.log(data);
+                getNotesByOgr(ogrId);
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                console.log('Error in Operation');
+            }
+        });
+
+
+    }
+    </script>
+}

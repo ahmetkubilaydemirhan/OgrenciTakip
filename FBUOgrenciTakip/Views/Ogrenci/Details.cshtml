@@ -1,0 +1,97 @@
+﻿@model DataAccessLayer.Entities.Ogrenci
+
+@{
+    ViewData["Title"] = "Detail";
+}
+
+<h1>Detail</h1>
+
+<div class="row">
+    <div class="col-md-4">
+        <h4>Ogrenci</h4>
+        <hr />
+        <dl class="row">
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Id)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Id)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Ad)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Ad)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Soyad)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Soyad)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Tel)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Tel)
+            </dd>
+        </dl>
+    </div>
+    <div class="col-md-8">
+        <div class="row">
+            <div class="col-md-6"></div>
+                <div class="col-md-6">
+                    @{ string imageStr = $"/images/{Model.FileName}";}
+                    <img src="@imageStr" width="280" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4"></div>
+                <div class="col-md-4">
+                    <input type="text" id="newNote" name="newNote" class="form-control" />
+                    <input style="float:right" id="btnSaveNote" type="button" value="Not Kaydet" class="btn btn-primary" />
+                </div>
+            </div>
+        </div>
+</div>
+<div>
+    @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
+    @Html.ActionLink("Not Ekle", "AddNote", new { id = Model.Id }) |
+    <a asp-action="Index">Back to List</a>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <h1>Notlar</h1>
+    </div>
+</div>
+<div id="notListDiv" class="row">
+    @Html.Partial("NotListByOgrId", Model.Nots.ToList())
+</div>
+
+@section Scripts
+{
+    <script>
+    $(document).ready(function () {
+        $("#btnSaveNote").click(function () {
+            var url = "/Ogrenci/SaveNote?ogrId=" +@Model.Id+"&text=" + $('#newNote').val();
+            $.get(url, function (data, status) {
+                if (data.success == true) {
+                    loadNOtList();
+                    alert("kayıt gerçekleşti notId=" + data.notId);
+                    
+                }
+                else {
+                    alert("HAta!" + data.hata);
+                }
+            });
+
+        });
+    });
+
+    function loadNOtList() {
+        $('#notListDiv').load("/Ogrenci/NotListByOgrId?ogrId=@Model.Id")
+    }
+
+    </script>
+}

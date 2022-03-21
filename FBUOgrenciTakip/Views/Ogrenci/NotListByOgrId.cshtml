@@ -1,0 +1,31 @@
+﻿@model List<DataAccessLayer.Entities.Not>
+
+
+<div class="col-md-12">
+    @{ int rowNum = 1;}
+    @foreach (var nt in Model)
+    {
+        <div class="row">
+            <div class="col-md-2">
+                @rowNum -
+                <a href="/Ogrenci/NotEdit/@nt.Id/@nt.OgrId" class="bi bi-pen"></a>
+                <a onclick="deleteNote(@nt.Id)" class="bi bi-trash"></a>
+
+            </div>
+            <div class="col-md-8">
+                @nt.Text
+            </div>
+
+        </div>
+        rowNum++;
+    }
+</div>
+
+<script>
+    function deleteNote(id) {
+        alert(id);
+        $.get("/Ogrenci/deleteNoteAjax?id=" + id, function () {
+            loadNOtList();
+        });
+    }
+</script>

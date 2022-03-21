@@ -1,0 +1,88 @@
+﻿@model DataAccessLayer.Entities.Ogrenci
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+<h4>Ogrenci</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Id" class="control-label"></label>
+                <input readonly asp-for="Id" class="form-control" />
+                <span asp-validation-for="Id" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Ad" class="control-label"></label>
+                <input asp-for="Ad" class="form-control" />
+                <span asp-validation-for="Ad" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Soyad" class="control-label"></label>
+                <input asp-for="Soyad" class="form-control" />
+                <span asp-validation-for="Soyad" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Tel" class="control-label"></label>
+                <input asp-for="Tel" class="form-control" />
+                <span asp-validation-for="Tel" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="FileName" class="control-label"></label>
+                <input type="file" asp-for="FileName" class="form-control" />
+                <span asp-validation-for="FileName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+<div>
+    <input type="button"  id="btnAjaxPost" name="btnAjaxPost" value="save withoutRefrehs" />
+</div>
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+<script>
+
+    $(document).ready(function () {
+       // alert("sayfa yüklendi");
+
+        $('#btnAjaxPost').click(function () {
+            var url = "/Ogrenci/EditOgrByAjax";
+
+            var data = {
+                Id: $('#Id').val(),
+                Ad: $('#Ad').val(),
+                Soyad: $('#Soyad').val(),
+                Tel: $('#Tel').val()
+            };
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: data,
+                success: function (data) { console.log(data) },
+                dataType: "json"
+            });
+
+        });
+
+    });
+
+    
+
+   
+
+</script>
+
+}

@@ -1,0 +1,96 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+
+}
+@using DataAccessLayer.Entities;
+<div class="text-center">
+    <h1 id="changeArea" class="display-4">Welcome</h1>
+    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>
+taban:
+<input type="text" id="deger" value="0" />
+üs:
+<input type="text" id="us" value="0" />
+<input type="button" value="click me" onclick="getNumber()" />
+
+<div>
+    telNo:<input type="text" id="tel"
+                 onfocus="focuslandi()" onfocusout="focusout()" />
+</div>
+<div>
+    <div><input type="text" id="id" /></div>
+    <div><input type="text" id="ad" /></div>
+    <div><input type="text" id="soyad" /></div>
+</div>
+<div><img src="~/images//firstImage.jpg" /></div>
+@{
+    List<Ogrenci> ogrenciler = (List<Ogrenci>)ViewData["ogrenciler"];
+}
+<div>
+    <div id="carouselExampleControls" style="width:20%" class="carousel slide" data-ride="carousel">
+        <div class="carousel-inner">
+    @{string activeDegisken = "active";}
+        @foreach (var ogr in ogrenciler)
+        {
+     <div class="carousel-item @activeDegisken">
+     <img width="220" height="220" src="/images/@ogr.FileName" class="d-block" alt="...">
+     </div>
+            activeDegisken = "";
+        }
+        </div>
+        <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="sr-only">Previous</span>
+        </a>
+        <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="sr-only">Next</span>
+        </a>
+    </div>
+</div>
+@section Scripts
+{
+    <script>
+        function getNumber() {
+            var sayiDeger = $('#deger').val();
+            var usDeger = $('#us').val();
+            var url = "/Home/GetNumber?sayi=" + sayiDeger + "&us=" + usDeger
+
+            $.get(url, function (kaan, status) {
+                $('#changeArea').html(kaan);
+            });
+
+
+        }
+        function callbackF(data, status) {
+            $('#changeArea').html(data);
+        }
+
+        function focuslandi() {
+            console.log("focus event fired")
+        }
+
+        function focusout() {
+            console.log("focus aut fired")
+        }
+
+        function changeEvent() {
+            $.get("/Home/GetUserByTel?sacma=" + $('#tel').val(),
+                function (res, status) {
+                    if (res.success == true) {
+                        $('#ad').val(res.data.ad);
+                        $('#soyad').val(res.data.soyad);
+                        $('#id').val(res.data.id);
+                    }
+                    else {
+
+                        $('#ad').val("");
+                        $('#soyad').val("");
+                        $('#id').val(res.yazi);
+                    }
+                });
+        }
+
+        $('#tel').change(changeEvent);
+    </script>
+}
